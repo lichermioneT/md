@@ -286,13 +286,120 @@ int main()
 
 ## 7动静态库
 
+### 静态库
+
+**linux下静态库长什么样子：libxxx.a。本质上就是一堆 .o文件打包到一起的。**
+
+**静态库：对个.o文件的压缩包。**
+
+**它不会在程序运行时被加载，而是在**链接阶段**把需要的代码拷贝进最终可执行程序。**
+
+**制作库的指令：archiver。归档器。**
+
+```
+ar      用来制作静态库的工具
+-r      replace，把目标文件插入到库中
+-c      create，如果库不存在就创建
+libmymath.a   静态库名字
+add.o sub.o   要打包进去的目标文件
+
+```
+
+```
+ar -t libmymath.a
+输出
+add.o
+sub.o
+```
+
+```
+nm libmymath.a
+输出
+add.o:
+0000000000000000 T Add
+
+sub.o:
+0000000000000000 T Sub
+```
+
+```
+gcc main.c -L. -lmymath -o main
+-L.        在当前目录查找库文件
+-lmymath   链接 libmymath.a
+-o main    生成可执行程序 main
+```
+
+```
+gcc -c add.c -o add.o
+gcc -c sub.c -o sub.o
+
+ar -rc libmymath.a add.o sub.o
+
+gcc main.c -L. -lmymath -o main
+```
+
+```
+static_lib_test/
+├── include/
+│   ├── add.h
+│   └── sub.h
+├── src/
+│   ├── add.c
+│   └── sub.c
+├── lib/
+│   └── libmymath.a
+└── main.c
+```
+
+```
+gcc main.c -Iinclude -Llib -lmymath -o main
+-Iinclude   去 include 目录找头文件
+-Llib       去 lib 目录找库文件
+-lmymath    链接 libmymath.a
+```
+
+```
+1. 源文件 .c 编译成 .o
+2. 使用 ar 工具把多个 .o 打包成 .a
+3. 编译主程序时通过 -L 指定库路径，通过 -l 指定库名
+4. 链接器会从静态库中提取需要的目标代码，合并到最终可执行程序中
+```
+
+```
+静态库是在链接阶段被拷贝进可执行程序的库。
+```
+
+ **静态库总结：**
+
+**1制作.o文件：gcc -c add.c -o add.o**
+
+**2打包.文件：ar -rc libmymath.a add.o sub.o**
+
+**3使用静态库需要知道三个东西 ：gcc main.c -Iinclude -Llib -lmymath -o main**
+
+​	**使用静态编译代码：I头文件的位置，-L库文件的位置，-l库文件的名称。**
+
+**其实也不需要记忆：include lib 库名称。**
 
 
 
+### 动态库
 
+```
+静态库 .a：链接时拷贝进可执行程序
+动态库 .so：运行时再加载
+```
 
+```
+gcc -fPIC -c add.c -I ../include -o add.o
+gcc -fPIC -c sub.c -I ../include -o sub.o
+生成位置无关代码 Position Independent Code
+```
 
-
+```
+gcc -shared add.o sub.o -o libmymath.so
+libmymath.so
+```
 
 
 
