@@ -401,9 +401,39 @@ gcc -shared add.o sub.o -o libmymath.so
 libmymath.so
 ```
 
+```
+shared_lib_test/
+├── include/
+│   ├── add.h
+│   └── sub.h
+├── src/
+│   ├── add.c
+│   └── sub.c
+├── lib/
+│   └── libmymath.so
+└── main.c
 
+gcc -fPIC -c src/add.c -Iinclude -o add.o
+gcc -fPIC -c src/sub.c -Iinclude -o sub.o
 
+gcc -shared add.o sub.o -o lib/libmymath.so
 
+gcc main.c -Iinclude -Llib -lmymath -Wl,-rpath=./lib -o main
+```
+
+| 对比项         | 静态库 `.a`              | 动态库 `.so`                   |
+| -------------- | ------------------------ | ------------------------------ |
+| 链接阶段       | 把代码拷贝进可执行程序   | 只记录依赖关系                 |
+| 运行阶段       | 不需要库文件             | 需要找到 `.so` 文件            |
+| 可执行程序大小 | 较大                     | 较小                           |
+| 更新库         | 需要重新链接程序         | 可以只替换 `.so`               |
+| 部署           | 简单，只有一个可执行程序 | 需要带上 `.so`                 |
+| 常见命令       | `ar -rc libxxx.a *.o`    | `gcc -shared *.o -o libxxx.so` |
+
+1. 使用 gcc -fPIC -c 生成位置无关的 .o 文件
+2. 使用 gcc -shared 生成 .so 动态库
+3. 编译主程序时通过 -L 指定库路径，通过 -l 指定库名
+4. 运行程序时，系统动态链接器需要找到对应的 .so 文件
 
 
 
