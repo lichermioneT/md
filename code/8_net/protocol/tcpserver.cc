@@ -86,7 +86,6 @@ void* handmessage(void* arg)
         {
           cout << "get请求的完整请求:" << endl;
           cout << header << endl;
-          cout << endl;
           // 删除已经处理完的请求头，包括 \r\n\r\n
           message.erase(0, pos + 4);
         }
@@ -138,10 +137,8 @@ int main()
   // 3.1这里做的存储128个三次握手的链接。
   n = listen(listesock, 128); 
 
-
 // 4.建听成功，我们就可以拿上来
     
-
   for(;;)
   {
     struct sockaddr_in peer;
