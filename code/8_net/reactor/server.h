@@ -16,4 +16,6 @@ int sendFile(const char* fileName, int cfd);
 int sendHeadMsg(int cfd, int status, const char* descr, const char* type, int length);
 // 判断文件的类型
 const char* getFileType(const char* name);
+// 发送目录
+int sendDir(const char* dirName, int cfd);
 

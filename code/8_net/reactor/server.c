@@ -1,4 +1,5 @@
 #include "server.h"
+#include <dirent.h>
 #include <sys/sendfile.h>
 #include <assert.h>
 #include <sys/stat.h>
@@ -11,6 +12,7 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 int initListenFd(unsigned short port)
 {
@@ -86,7 +88,7 @@ int epollRun(int lfd)
 
   while(1)
   {
-    int num = epoll_wait(epfd, evs, size, -1);
+    int num = epoll_wait(epfd, evs, size, -1); // -1阻塞等待。 有事件就绪才准备才返回的
     for(int i = 0; i < num; ++i)
     {
       int fd = evs[i].data.fd;
@@ -146,7 +148,7 @@ int recvHttpRequestt(int cfd, int epfd)
   int len = 0;
   int total = 0;
 
-  while((len = recv(cfd, buffer, sizeof buffer, 0)) > 0)
+  while((len = recv(cfd, temp, sizeof temp, 0)) > 0)
   {
     if((size_t)total + len < sizeof buffer)
     {
@@ -160,6 +162,12 @@ int recvHttpRequestt(int cfd, int epfd)
   if(len == -1 && errno == EAGAIN)
   {
     // 解析请求行
+    char* pt = strstr(buffer, "\r\n");
+    int reqLen = pt - buffer;
+
+    buffer[reqLen] = '\0';
+
+    parseRequestLine(buffer, cfd);
   }
   else if(len == 0)
   {
@@ -194,7 +202,7 @@ int parseRequestLine(const char* line, int cfd)
 
   // 处理客户端的静态资源(目录或者静态资源)
   
-  char* file = NULL;
+  const char* file = NULL;
   if(strcmp(path, "/") == 0)
   {
     file = "./";
@@ -210,23 +218,24 @@ int parseRequestLine(const char* line, int cfd)
   {
     // 文件不存在的，回复404
     sendHeadMsg(cfd, 404, "Not Found", getFileType(".html"), -1); // -1我不知道，自己去读
-    sendFile("404.htl", cfd);
-
+    sendFile("404.html", cfd);
     return 0;
   }
 
   if(S_ISDIR(st.st_mode))
   {
     // 把这个目录发送给客户端
-
+    sendHeadMsg(cfd, 200, "OK", getFileType(".html"), -1); // -1我不知道，自己去读
+    sendDir(file, cfd);
   }
   else 
   {
     // 把文件的内容发送客户端
-    sendHeadMsg(cfd, 404, "Not Found", getFileType(file), st.st_size); // -1我不知道，自己去读
+    sendHeadMsg(cfd, 200, "OK", getFileType(file), st.st_size); // -1我不知道，自己去读
     sendFile(file, cfd);
   }
 
+  close(cfd);
   return 0;
 }
 
@@ -258,11 +267,25 @@ int sendFile(const char* fileName, int cfd)
   }
 #else 
   // sendFile号称零拷贝函数的
-  int size = lseek(fd, 0, SEEK_END);
-  sendfile(cfd, fd, NULL, size);
   
+  int size = lseek(fd, 0, SEEK_END);
+  lseek(fd, 0, SEEK_SET);
+
+  off_t offset = 0;
+
+  while(offset < size)
+  {
+     int ret =  sendfile(cfd, fd, &offset, size - offset);
+     printf("ret: value:%d\n", ret);
+
+     if(ret == -1 && errno == EAGAIN)
+     {
+       printf("没有数据的...\n");
+     }
+  }
 
 #endif
+  close(fd);
   return 0;
 }
 
@@ -276,7 +299,7 @@ int sendHeadMsg(int cfd, int status, const char* descr, const char* type, int le
   sprintf(buffer + strlen(buffer), "content-type: %s\r\n", type);
   sprintf(buffer + strlen(buffer), "content-length: %d\r\n\r\n", length);
 
-  send(cfd, buffer, sizeof buffer, 0);
+  send(cfd, buffer, strlen(buffer), 0);
   return 0;
 }
 
@@ -320,4 +343,46 @@ const char* getFileType(const char* name)
 
     return "text/plain; charset=utf-8";
 }
+
+
+int sendDir(const char* dirName, int cfd)
+{
+  char buf[4096];
+  sprintf(buf, "<html><head><title>%s</title></head><body><table>",dirName);
+
+  struct dirent** namelist;
+  int n = scandir(dirName, &namelist, NULL, alphasort);
+  for(int i = 0; i < n; ++i)
+  {
+    // 1.取出名字。
+    char* name = namelist[i]->d_name;
+
+    // 2.判断是不是文件
+    char subPath[1024];
+    sprintf(subPath, "%s/%s", dirName, name);
+    struct stat st;
+    stat(subPath, &st);
+
+    if(S_ISDIR(st.st_mode))
+    {
+      sprintf(buf + strlen(buf), "<tr><td><a href = \"%s/\">%s</td><td>%ld</td><tr>", name,name, st.st_size);
+    }
+    else 
+    {
+      sprintf(buf + strlen(buf), "<tr><td><a href = \"%s\">%s</td><td>%ld</td><tr>", name,name, st.st_size);
+    }
+
+    send(cfd, buf, strlen(buf), 0);
+    memset(buf,0, sizeof buf);
+    free(namelist[i]);
+  }
+
+  sprintf(buf, "</table></body></html>");
+  send(cfd, buf, strlen(buf), 0);
+
+  free(namelist);
+
+  return 0;
+}
+
 
