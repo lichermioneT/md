@@ -290,6 +290,8 @@ int main()
 
 
 
+## 7实现string
+
 
 
 
