@@ -150,7 +150,7 @@ int recvHttpRequestt(int cfd, int epfd)
 
   while((len = recv(cfd, temp, sizeof temp, 0)) > 0)
   {
-    if((size_t)total + len < sizeof buffer)
+    if(total + len < sizeof buffer)
     {
       memcpy(buffer + total, temp, len);
     }
@@ -348,7 +348,7 @@ const char* getFileType(const char* name)
 int sendDir(const char* dirName, int cfd)
 {
   char buf[4096];
-  sprintf(buf, "<html><head><title>%s</title></head><body><table>",dirName);
+  sprintf(buf, "<html><head><title>%s</title></head><body><table>", dirName);
 
   struct dirent** namelist;
   int n = scandir(dirName, &namelist, NULL, alphasort);
@@ -377,7 +377,7 @@ int sendDir(const char* dirName, int cfd)
     free(namelist[i]);
   }
 
-  sprintf(buf, "</table></body></html>");
+  sprintf(buf + strlen(buf), "</table></body></html>");
   send(cfd, buf, strlen(buf), 0);
 
   free(namelist);

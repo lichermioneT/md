@@ -111,17 +111,18 @@ public:
 
       delete[]  _str;
       _str = tmp;
-      
+      _str[_size] = '\0';
       _capacity = n;
     }
   }
   
-
 // 2.2 resize()
   void resize(size_t n, char ch = '\0')
   {
     if(_size < n)
     {
+       reserve(n);
+
 
     }
   }
@@ -133,7 +134,6 @@ public:
 
 int main()
 {
-  
   string s;
   string s1("fffffffffffffff");
   string s2(20, 'x');
