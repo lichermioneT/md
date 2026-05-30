@@ -29,6 +29,9 @@ int main()
   // 4.拷贝构造，就是用旧的对象，构造一个一模一样的新对象。
   string s3(s2);
   
+  // 5.迭代器构造
+
+    
   cout << s << endl;
   cout << s1 << endl;
   cout << s2 << endl;
@@ -153,11 +156,13 @@ int main()
 {
   string s1("hello lichermionexxxxxxxxxxxx");
   size_t size = s1.size();
+  
+  // 本质上还是一个字符数组，可以进行遍历的[]
   for(size_t i = 0; i < size; ++i)
   {
     cout<< s1[i];
   }
-
+    
   cout<<endl;
   return 0;
 }
@@ -179,7 +184,8 @@ int main()
 {
   string s1("hello lichermionexxxxxxxxxxxx");
   string::iterator it = s1.begin();
-
+  
+  // string的迭代器本本质也是值的。
   while(it != s1.end())
   {
     cout<< *it;
@@ -280,6 +286,7 @@ int main()
   // 2.substr 
   // 1.第一个参数是：字符串的起始位置
   // 2.第二个参数树：字符串的步长，起始位置也算的，。
+  // 从开始位置找几个字符的。
   string sub = s.substr(1, 3);
   cout << sub <<endl;
 
@@ -287,6 +294,30 @@ int main()
 }
 
 ```
+
+## 删除函数
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+int main()
+{
+  string s("lichermionxexx");
+  
+  size_t pos = s.find("c");
+  s.erase(pos, 4);
+  
+  // limionxexx
+  // 从开始位置齐，然后删除几个元素的。
+  cout<< s << endl;
+
+  return 0;
+}
+```
+
+
 
 
 
