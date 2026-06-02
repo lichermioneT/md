@@ -31,7 +31,6 @@ int main()
   
   // 5.迭代器构造
 
-    
   cout << s << endl;
   cout << s1 << endl;
   cout << s2 << endl;
@@ -331,7 +330,16 @@ int main()
 }
 ```
 
+| 用法                   | 含义                               | 返回值                   |
+| ---------------------- | ---------------------------------- | ------------------------ |
+| `s.erase(pos, len)`    | 从下标 `pos` 开始删除 `len` 个字符 | `string&`                |
+| `s.erase(pos)`         | 从下标 `pos` 删除到结尾            | `string&`                |
+| `s.erase(it)`          | 删除迭代器 `it` 指向的字符         | 下一个位置的迭代器       |
+| `s.erase(first, last)` | 删除 `[first, last)` 区间          | 删除后新区间位置的迭代器 |
 
+**s.erase(pos, len);   // 按下标删除**
+
+**it = s.erase(it);    // 遍历时删除**
 
 
 
@@ -776,25 +784,238 @@ std::ostream& operator<<(std::ostream& out, const string& s)
 
 
 
+## 题 1：统计字符出现次数
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+int countChar(const string& str, char ch)
+{
+  int ret = 0;
+  for(auto e : str)
+  {
+    if(e == ch)
+    {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+int main()
+{
+  string s = "hello world";
+  cout<< countChar(s, 'l') <<endl;
+
+  return 0;
+}
+```
+
+## 题 2：反转字符串
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+void rever(string& str)
+{
+  int left = 0;
+  int right =  str.size()-1;
+
+  while(left < right)
+  {
+    swap(str[left], str[right]);
+    left++;
+    right--;
+  }
+}
+
+int main()
+{
+  string s("lichermionxe");
+  cout<< s <<endl;
+
+  rever(s);
+  cout<< s <<endl;
+
+  return 0;
+}
+
+```
 
 
 
+## 题 3：判断回文串
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+bool loopstr(const string& str)
+{
+  int left = 0;
+  int right = str.size() - 1;
+  
+  while(left < right)
+  {
+    if(str[left] != str[right])
+    {
+      return false;
+    }
+
+    left++;
+    right--;
+  }
+
+  return true;
+}
+
+int main()
+{
+
+  cout<< loopstr("level") <<endl;
+  cout<< loopstr("hello") <<endl;
+
+  return 0;
+}
+
+```
 
 
 
+## 题 4：查找子串
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+bool findsubstr(const string& str, const char* substr)
+{
+  size_t pos = str.find(substr);
+  if(pos != string::npos)
+  {
+    return true;
+  }
+  else 
+  {
+    return false;
+  }
+}
+
+int main()
+{
+  string s("hello world");
+  const char* str = "world";
+  const char* str1 = "xxxworld";
+
+  cout<< findsubstr(s, str) <<endl;
+  cout<< findsubstr(s, str1) <<endl;
+  return 0;
+}
+```
 
 
 
+## 题 5：删除所有空格
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+void findsubstr(string& str)
+{
+  size_t i = 0;
+  for(size_t j = 0; j < str.size(); ++j)
+  {
+    if(str[j] != ' ')
+    {
+      str[i++] = str[j];
+    }
+  }
+  s.resize(i);
+}
+
+int main()
+{
+  string s("lic f f f f f f ff ");
+  cout<< s <<endl;
+
+  findsubstr(s);
+  cout<< s <<endl;
+
+  return 0;
+}
+```
+
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s = "a b c d";
+
+    for (size_t i = 0; i < s.size(); )
+    {
+        if (s[i] == ' ')
+        {
+            s.erase(i, 1);
+        }
+        else
+        {
+            ++i;
+        }
+    }
+
+    cout << s << endl;
+
+    return 0;
+}
+```
 
 
 
+## 题 6：截取文件后缀
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+string findfile(string& str)
+{
+  size_t pos = str.rfind('.');
+  if(pos != string::npos)
+  {
+    return str.substr(pos + 1);
+  }
+  return "";
+}
+
+
+int main()
+{
+
+  string file("test.cpp");
+  cout<< findfile(file) <<endl;
+
+  return 0;
+}
+
+```
 
 
 
+## 题 7：简单分割字符串
 
+```
 
-
-
-
-
+```
 
