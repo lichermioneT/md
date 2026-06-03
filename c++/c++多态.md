@@ -1,0 +1,478 @@
+# c++多态
+
+## 1. 多态的概念
+
+**多态的概念：通俗来说，就是多种形态，具体点就是去完成某个行为，当不同的对象去完成时会产生出不同 的状态**
+
+
+
+
+
+## 2. 多态的定义及实现
+
+### 2.1多态的构成条
+
+**多态是在不同继承关系的类对象，去调用同一函数，产生了不同的行为**
+
+**1.必须通过基类的指针或者引用调用虚函数**
+
+**2.被调用的函数必须是虚函数， 且派生类必须对基类的虚函数进行重写的**
+
+**代码示例：**
+
+```c++
+#include <iostream>
+using namespace std;
+
+class person
+{
+public:
+  virtual void buyticket()
+  {
+    cout<< "成年人，全价" <<endl;
+  }
+};
+
+class student : public person
+{
+public:
+  virtual void buyticket()
+  {
+    cout<< "学生，半价" <<endl;
+  }
+};
+
+void fun1(person& p)
+{
+  p.buyticket();
+}
+
+void func2(person* p)
+{
+  p->buyticket();
+}
+
+int main()
+{
+  person p;
+  student s;
+  
+  fun1(p);
+  fun1(s);
+
+  func2(&p);
+  func2(&s);
+  return 0;
+}
+```
+
+**1.继承体系里面的**
+
+**2.虚函数重写**
+
+**3.指针或者引用调用**
+
+
+
+### 2.2 虚函数
+
+**对象的成员函数被 virtual修饰的。**
+
+
+
+### 2.3虚函数的重写
+
+**虚函数的重写(覆盖)：派生类中有一个跟基类完全相同的虚函数(即派生类虚函数与基类虚函数的返回值类 型、函数名字、参数列表完全相同)，**
+
+**称子类的虚函数重写了基类的虚函数。**
+
+
+
+### 2.4**虚函数重写的例外**
+
+**1. 协变(基类与派生类虚函数返回值类型不同)**
+
+**派生类和基类返回的值不一样**
+
+**基类：返回值。基类的指针或者引用。**
+
+**派生类：返回值。派生类的指针或者引用。**
+
+
+
+**2. 析构函数的重写(基类与派生类析构函数的名字不同)**
+
+**基类的析构函数为虚函数。不论派生类是否声明为：虚函数，都构成重写的。 此时析构函数编译器 统一声明为 destructor函数。**
+
+
+
+
+
+### 2.5两个关键字
+
+ **final：修饰虚函数，表示该虚函数不能再被重写**
+
+```c++
+class Car
+{
+public:
+ virtual void Drive() final {}
+};
+class Benz :public Car
+{
+public:
+ virtual void Drive() {cout << "Benz-舒适" << endl;}
+};
+```
+
+**2. override: 检查派生类虚函数是否重写了基类某个虚函数，如果没有重写编译报错。**
+
+```c++
+class Car
+{
+public:
+ virtual void Drive(){}
+};
+class Benz :public Car 
+{
+public:
+ virtual void Drive() override {cout << "Benz-舒适" << endl;}
+};
+```
+
+
+
+### 2.5重载，覆盖(重写)，隐藏(重定义)。
+
+**函数重载：函数名一样。 参数不一样的。**
+
+**覆盖重写：1.基类和派生类。 2.函数参数，返回值，函数名，一样的。 3.都必须是虚函数。**
+
+**隐藏：基类和派生了，函数名一样的。**
+
+
+
+## 3.抽象类
+
+**纯虚函数**
+
+```c++
+#include <iostream>
+using namespace std;
+
+class car
+{
+public:
+  virtual void drive() = 0;
+};
+
+class modely : public car 
+{
+public:
+  virtual void drive()
+  {
+    cout<< "modely:suv" <<endl;
+  }
+};
+
+class model3 : public car 
+{
+public:
+  virtual void drive()
+  {
+    cout<< "model3: super car" <<endl;
+  }
+};
+
+int main()
+{
+  car* p1 = new modely;
+  p1->drive();
+
+  car* p2 = new model3;
+  p2->drive();
+
+  return 0;
+}
+```
+
+
+
+## 4.多态的原理
+
+```c++
+#include <iostream>
+using namespace std;
+
+class Animal
+{
+public:
+    virtual void speak()
+    {
+        cout << "Animal speak" << endl;
+    }
+};
+
+class Dog : public Animal
+{
+public:
+    void speak() override
+    {
+        cout << "Dog bark" << endl;
+    }
+};
+
+class Cat : public Animal
+{
+public:
+    void speak() override
+    {
+        cout << "Cat meow" << endl;
+    }
+};
+
+int main()
+{
+    Animal* p1 = new Dog;
+    Animal* p2 = new Cat;
+
+    p1->speak(); // Dog bark
+    p2->speak(); // Cat meow
+
+    delete p1;
+    delete p2;
+
+    return 0;
+}
+```
+
+这里 `p1` 和 `p2` 的类型都是：
+
+```
+Animal*
+```
+
+但是实际指向的对象不同：
+
+```
+p1 -> Dog对象
+p2 -> Cat对象
+```
+
+所以调用：
+
+```
+p1->speak();
+p2->speak();
+```
+
+```
+                Animal 类的虚函数表
+                +----------------------+
+                | [0] &Animal::speak   |
+                +----------------------+
+
+                Dog 类的虚函数表
+                +-------------------+
+                | [0] &Dog::speak   |
+                +-------------------+
+
+                Cat 类的虚函数表
+                +-------------------+
+                | [0] &Cat::speak   |
+                +-------------------+
+
+
+Animal* p1 ----------------------+
+                                 |
+                                 v
+                           Dog 对象
+                           +-------------------+
+                           | vptr ------------ | ----> Dog 的虚函数表
+                           +-------------------+
+
+Animal* p2 ----------------------+
+                                 |
+                                 v
+                           Cat 对象
+                           +-------------------+
+                           | vptr ------------ | ----> Cat 的虚函数表
+                           +-------------------+
+```
+
+
+
+
+
+### 4.1虚函数原理
+
+```c++
+class Base
+{
+public:
+ virtual void Func1()
+ {
+ cout << "Func1()" << endl;
+ }
+private:
+ int _b = 1;
+};
+
+```
+
+**1.一个对象含有虚函数，知识存在一个虚函数指针表。**
+
+**2.虚函数的地址要放到虚表里面。**
+
+**3.虚函数表简称虚表**
+
+
+
+```c++
+class Base
+{
+public:
+ virtual void Func1()
+ {
+ 	cout << "Base::Func1()" << endl;
+ }
+ virtual void Func2()
+ {
+ 	cout << "Base::Func2()" << endl;
+ }
+    
+ void Func3()
+ {
+ 	cout << "Base::Func3()" << endl;
+ }
+private:
+ int _b = 1;
+};
+class Derive : public Base
+{
+public:
+ virtual void Func1()
+ {
+ 	cout << "Derive::Func1()" << endl;
+ }
+private:
+ int _d = 2;
+};
+
+int main()
+{
+ Base b;
+ Derive d;
+ return 0;
+}
+```
+
+**1.派生类的虚表指针：一部分是自己继承下来的成员，一部分是自己的成员。**
+
+**2.派生类对Func1完成了重写，所以派生类的虚函数表被覆盖了的。覆盖就是指虚函数的覆盖。重写是语法上的叫法。 覆盖是原理成的叫法。**
+
+**3.继承的虚函数放到虚表里面。不是虚函数不放到虚表里面的。**
+
+**4.虚函数表本质是一个函数指针的，一般情况最后一个放nullptr的。**
+
+**5流程：**
+
+​		**1.派生类先继承虚函数表，将虚函数表拷贝一份的。**
+
+​		**2.如果是重写了某个虚函数的就覆盖虚函数。**
+
+​		**3.派生类自己新增加的虚函数按照 在类里面的声明   依次往后放的。**
+
+**6.虚函数在哪里呢？   虚函数在虚表里面的。‘**
+
+
+
+因为 **C++ 多态的本质是：用“统一的基类接口”去操作“不同的派生类对象”**。
+
+而要做到这一点，就必须让一个变量既能代表 `Dog`，又能代表 `Cat`，还要保留对象的真实类型信息。
+
+这就需要：
+
+```
+Base* p
+```
+
+或者：
+
+```
+Base& r
+```
+
+而不是直接用普通对象。
+
+
+
+### 4.2多态的原理
+
+```c++
+class Person
+{
+public:
+ virtual void BuyTicket() { cout << "买票-全价" << endl; }
+};
+
+class Student : public Person
+{
+public:
+ virtual void BuyTicket() { cout << "买票-半价" << endl; }
+};
+void Func(Person& p)
+{
+ p.BuyTicket();
+}
+int main()
+{
+ Person Mike;
+ Func(Mike);
+
+ Student Johnson;
+ Func(Johnson);
+ return 0;
+}
+```
+
+**1. Mike的虚表是  person**
+
+**2.Johson的虚表是 student**
+
+**3. 这样就实现出了不同对象去完成同一行为时，展现出不同的形态。**
+
+**4. 反过来思考我们要达到多态，有两个条件，一个是虚函数覆盖，一个是对象的指针或引用调用虚函数。 反思一下为什么？**
+
+
+
+### 4.3 动态绑定与静态绑定
+
+1. **静态绑定又称为前期绑定(早绑定)，在程序编译期间确定了程序的行为，也称为静态多态，比如：函数 重载** 
+
+2. **动态绑定又称后期绑定(晚绑定)，是在程序运行期间，根据具体拿到的类型确定程序的具体行为，调用 具体的函数，也称为动态多态。**
+
+
+
+## 5.单继承和多继承关系的虚函数表
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
