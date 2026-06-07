@@ -133,11 +133,26 @@ private:
 
 int main()
 {
+  sharePtr<Date> sp1(new Date(2026, 6, 7));
+  cout<< "sp1 count:" << sp1.use_count() <<endl;
 
-  sharePtr<Date> sp1(new Date(2000, 2, 10));
-  cout<< "sp1 count:" <<sp1.use_count() << endl;
+  {
+    sharePtr<Date> sp2(sp1);
+    cout<< "sp1 count:" << sp1.use_count() <<endl;
+    cout<< "sp2 count:" << sp2.use_count() <<endl;
 
+    sharePtr<Date> sp3;
+    sp3 = sp2;
 
+    cout<< "sp1 count:" << sp1.use_count() <<endl;
+    cout<< "sp2 count:" << sp2.use_count() <<endl;
+    cout<< "sp3 count:" << sp3.use_count() <<endl;
+
+    sp3->Print();
+  }
+
+  cout<< "sp1 count:" << sp1.use_count() <<endl;
+  sp1->Print();
 
   return 0;
 }
