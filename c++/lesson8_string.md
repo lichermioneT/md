@@ -73,10 +73,10 @@ int main()
   s1.clear(); 
 
   cout<< "清理后的，容量" <<endl;
-  cout<< "size:" <<s1.size() <<endl;
-  cout<< "length:" <<s1.length() << endl;
+  cout<< "size:" <<s1.size() <<endl; // 0
+  cout<< "length:" <<s1.length() << endl; // 0
 
-  cout<< "capacity:"<< s1.capacity() <<endl;
+  cout<< "capacity:"<< s1.capacity() <<endl; // 不变
 
   return 0;
 }
@@ -224,6 +224,8 @@ int main()
 
 ### 4.3
 
+
+
 ### 4.4
 
 
@@ -337,6 +339,51 @@ int main()
 | `s.erase(it)`          | 删除迭代器 `it` 指向的字符         | 下一个位置的迭代器       |
 | `s.erase(first, last)` | 删除 `[first, last)` 区间          | 删除后新区间位置的迭代器 |
 
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+int main()
+{
+// 1.erase删除pos位置的数据，然后返回删除的字符。
+  string s{"licherminonex"};
+  cout<< s <<endl; 
+  size_t pos = s.find('e');
+  cout<< s.erase(pos) <<endl;
+
+// 2.传入迭代器删除
+  string s2x{"licherminonex"};
+  cout<< s2x <<endl; 
+
+  string::iterator it = s2x.begin() + 4;
+  it = s2x.erase(it);
+
+  cout<< s2x <<endl; 
+  cout<< *it <<endl;
+
+
+  return 0;
+}
+
+```
+
+```c++
+licherminonex
+lich
+licherminonex
+lichrminonex
+r
+```
+
+**传入迭代器：传入什么位置，就删除那个位置的元素。**
+
+**传入区间：从起始位置删到结束位置前一个。**
+
+**string` 传入下标 `pos`：默认从 `pos` 删除到末尾。**
+
+
+
 **s.erase(pos, len);   // 按下标删除**
 
 **it = s.erase(it);    // 遍历时删除**
@@ -345,7 +392,6 @@ int main()
 #include <string>
 #include <iostream>
 using namespace std;
-
 
 int main()
 {
@@ -360,7 +406,6 @@ int main()
   it = s.erase(it);
   cout<< s <<endl;
   cout<< *it <<endl;
-
 
   return 0;
 }
