@@ -3,6 +3,7 @@
 
 class date 
 {
+friend std::ostream& operator<<(std::ostream&, const date&);
 public:
 // 1.默认构造函数
   date(int year, int month,  int day);
@@ -47,3 +48,5 @@ private:
   static const int monthDay[12];
 	static int getMonthDay(int year, int month);
 };
+
+std::ostream& operator<<(std::ostream&, const date&);

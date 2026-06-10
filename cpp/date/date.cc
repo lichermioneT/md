@@ -1,4 +1,4 @@
-#include "date.cpp"
+#include "date.h"
 
 const int date::monthDay[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -147,7 +147,6 @@ date& date::operator-=(int day)
   
   while(_day <= 0)
   {
-
     _month -= 1;
     if(_month == 0)
     {
@@ -196,36 +195,9 @@ date date::operator--(int)
   return temp;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+std::ostream& operator<<(std::ostream& out, const date& d)
+{
+  out<< d._year << "-" << d._month << "-" << d._day << std::endl;;
+  return out;
+}
 

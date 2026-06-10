@@ -15,11 +15,15 @@ int main()
 
   // 4.拷贝构造，就是用旧的对象，构造一个一模一样的新对象。
   string s3(s2);
+
+  // 5.迭代器构造
+  string s4(s2.begin(), s2.end());
   
   cout << s << endl;
   cout << s1 << endl;
   cout << s2 << endl;
   cout << s3 << endl;
+  cout << s4 << endl;
 
   return 0;
 }
