@@ -30,12 +30,14 @@ int main()
   string s3(s2);
   
   // 5.迭代器构造
+  string s4(s2.begin(), s2.end());
 
   cout << s << endl;
   cout << s1 << endl;
   cout << s2 << endl;
   cout << s3 << endl;
-
+  cout << s3 << endl;
+    
   return 0;
 }
 ```
@@ -168,9 +170,7 @@ int main()
 
 ```
 
-### 4.2
-
-**迭代器遍历**
+### 4.2**迭代器遍历**
 
 **1.正向遍历**
 
@@ -222,11 +222,54 @@ int main()
 
 ```
 
-### 4.3
+### 4.3迭代器遍历
+
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+int main()
+{
+  string s1("hello lichermionexxxxxxxxxxxx");
+  string::iterator it = s1.begin();
+  
+  // string的迭代器本本质也是值的。
+  while(it != s1.end())
+  {
+    cout<< *it;
+    ++it;
+  }
+  cout<<endl;
+
+  return 0;
+}
+```
 
 
 
-### 4.4
+```c++
+#include <string>
+#include <iostream>
+using namespace std;
+
+int main()
+{
+  string s1("hello lichermionexxxxxxxxxxxx");
+  string::reverse_iterator it = s1.rbegin();
+
+  while(it != s1.rend())
+  {
+    cout<< *it;
+    ++it;
+  }
+  cout<<endl;
+
+  return 0;
+}
+```
+
+
 
 
 
